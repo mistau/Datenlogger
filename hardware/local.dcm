@@ -1,0 +1,17 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP CC1101
+D CC1101 transceiver pcb
+$ENDCMP
+#
+$CMP MCP111
+D MCP111
+F http://ww1.microchip.com/downloads/en/DeviceDoc/20001889F.pdf
+$ENDCMP
+#
+$CMP SI2365
+D Si2365
+F http://www.vishay.com/docs/72024/72024.pdf
+$ENDCMP
+#
+#End Doc Library
