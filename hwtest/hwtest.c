@@ -36,11 +36,11 @@
 #define UART_OUTPUT(x)   x    // define this to x to get output, otherwise to nothing
 
 #define TEST_LED                   1
-#define TEST_UART                  0
-#define TEST_RTC                   0
-#define TEST_RTC_IRQ               0
+#define TEST_UART                  1
+#define TEST_RTC                   1
+#define TEST_RTC_IRQ               1
 #define TEST_FLASH                 1
-#define TEST_PUSHBUTTON_IRQ        0
+#define TEST_PUSHBUTTON_IRQ        1
 
 /* =================================================================
    Deklarationen
@@ -271,10 +271,10 @@ int main (void)
             ++errors;
         }
         if(buf2[0] & 0x1){
-            printf_P(PSTR("   flash configured with 512bytes/sector\n"));
+            printf_P(PSTR("            flash configured with 512bytes/sector\n"));
         }else{
-            printf_P(PSTR("   flash configured with 528bytes/sector\n"));
-            printf_P(PSTR("    ->we'll fix that for you. "));
+            printf_P(PSTR("            flash configured with 528bytes/sector\n"));
+            printf_P(PSTR("            ->we'll fix that for you. "));
             flash_conf_power2_size();
             flash_get_status(buf2);
             if(buf2[0]&0x01){
@@ -282,70 +282,31 @@ int main (void)
             }else{
                 printf_P(PSTR("FAIL\n"));
                 ++errors;
-            }
-                
+            }     
         }
 
-#if(1)
-        /* ugly test - we fill the entire flash */
-        printf_P(PSTR("Testcase x: fill the entire flash.\n"));
-        for(int i=0; i<8192; ++i){
-            buffer[0] = (i >>8) & 0xff;
-            buffer[1] = i & 0xff;
-            flash_write_page(i, buffer);
-            if((i & 0x7f)==0)
-                printf_P(PSTR("*"));
-        }
-#endif
+        printf_P(PSTR("Testcase 6: write page to flash.\n"));
+        int i=8000;
+        buffer[0] = (i >>8) & 0xff;
+        buffer[1] = i & 0xff;
+        flash_write_page(i, buffer);
         flash_enter_ultradeep_powerdown();
         _delay_ms(1000);
         flash_resume_ultradeep_powerdown();        
-        
-        /* read the result */
-        flash_read_page(buffer, 0);
-        printf_P(PSTR("Sector %x: %02x %02x %02x %02x\n"), 0, buffer[0], buffer[1], buffer[2], buffer[3]);
-        flash_read_page(buffer, 2000);
-        printf_P(PSTR("Sector %x: %02x %02x %02x %02x\n"), 2000, buffer[0], buffer[1], buffer[2], buffer[3]);
-        flash_read_page(buffer, 4100);
-        printf_P(PSTR("Sector %x: %02x %02x %02x %02x\n"), 4100, buffer[0], buffer[1], buffer[2], buffer[3]);
-        flash_read_page(buffer, 8191);
-        printf_P(PSTR("Sector %x: %02x %02x %02x %02x\n"), 8191, buffer[0], buffer[1], buffer[2], buffer[3]);
 
-        printf_P(PSTR("Testcase x: erase the entire flash. "));
-        //flash_erase_chip();
-        // printf_P(PSTR("ok\n"));
-        printf_P(PSTR("skipped\n"));
-        
-        /* read the result */
-        flash_read_page(buffer, 0);
-        printf_P(PSTR("Sector %x: %02x %02x %02x %02x\n"), 0, buffer[0], buffer[1], buffer[2], buffer[3]);
-        flash_read_page(buffer, 2000);
-        printf_P(PSTR("Sector %x: %02x %02x %02x %02x\n"), 2000, buffer[0], buffer[1], buffer[2], buffer[3]);
-        flash_read_page(buffer, 4100);
-        printf_P(PSTR("Sector %x: %02x %02x %02x %02x\n"), 4100, buffer[0], buffer[1], buffer[2], buffer[3]);
-        flash_read_page(buffer, 8191);
-        printf_P(PSTR("Sector %x: %02x %02x %02x %02x\n"), 8191, buffer[0], buffer[1], buffer[2], buffer[3]);
-
-        while(1);
-                    
-
-#if(0)        
-        printf_P(PSTR("Testcase 6: read page from flash.\n"));
-        flash_read_page(buffer, 0x00);  /* read page 0 */
-        for(int i=0; i<16; ++i)
-            printf_P(PSTR("%02x "), buffer[i]);
-        printf_P(PSTR("\n"));
-
-        printf_P(PSTR("Testcase 7: write page to flash.\n"));
-        buffer[0] = 0xde; buffer[1] = 0xad;
-        buffer[2] = 0xbe; buffer[3] = 0xef;
-        // flash_write_page(0x00, buffer);
-#endif
-
+        printf_P(PSTR("Testcase 7: read page from flash. "));
+        flash_read_page(buffer, 8000);
+        if((buffer[0] == ((i >>8) & 0xff)) &&
+           (buffer[1] == (i & 0xff))){
+            printf_P(PSTR("ok\n"));            
+        }else{
+            printf_P(PSTR("FAIL\n"));
+            ++errors;
+        }
 #endif
 
 #if(TEST_PUSHBUTTON_IRQ)        
-        printf_P(PSTR("Testcase 6: check interrupts triggered by pushbutton "));
+        printf_P(PSTR("Testcase 8: check interrupts triggered by pushbutton "));
         if(!(PIND & _BV(BUTTON))){
             printf_P(PSTR("Failed\n*** Error: pin not pulled high!\n"));
             ++errors;
