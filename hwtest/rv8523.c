@@ -79,7 +79,7 @@ void rv8523_init(void)
     write_reg(RV8523_TIMER_CLOCKOUT, 0x38); /* switch off CLKOUT on INT1 */
 
     /* \fixme the line below only works with battery connected! */
-    /* write_reg(RV8523_CONTROL3, 0x00); */  /* battery switchover in standard mode */
+    write_reg(RV8523_CONTROL3, 0x00);  /* battery switchover in standard mode */
 
     /* \todo rtc correction mechanism */
 }
